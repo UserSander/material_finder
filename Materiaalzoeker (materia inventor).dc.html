@@ -301,12 +301,7 @@ input[type=number]{font-family:'IBM Plex Mono',monospace;}
 
 </div>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="oklch(0.55 0.14 245)"/><g fill="#fff"><rect x="30" y="30" width="40" height="7" rx="2"/><rect x="30" y="44" width="40" height="7" rx="2" opacity="0.7"/><rect x="30" y="58" width="26" height="7" rx="2" opacity="0.45"/></g></svg></template></x-dc>
-<script type="text/x-dc" data-dc-script data-props="{
-  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 900 },
-  &quot;defaultView&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;A&quot;, &quot;B&quot;], &quot;default&quot;: &quot;A&quot;, &quot;tsType&quot;: &quot;'A'|'B'&quot; },
-  &quot;showAiReason&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; },
-  &quot;maxCompare&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 4, &quot;min&quot;: 2, &quot;max&quot;: 6, &quot;tsType&quot;: &quot;number&quot; }
-}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;defaultView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;A&quot;,&quot;B&quot;],&quot;default&quot;:&quot;B&quot;,&quot;tsType&quot;:&quot;'A'|'B'&quot;},&quot;showAiReason&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;maxCompare&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:4,&quot;min&quot;:2,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;}}">
 class Component extends DCLogic {
   PROPS = {
     tensile:      { label:'Treksterkte',          unit:'MPa',   min:0, max:1400, step:10,  dir:'higher', decimals:0 },
@@ -319,26 +314,35 @@ class Component extends DCLogic {
   };
 
   MATERIALS = [
-    { id:'ss304',  name:'RVS 304',            category:'Metaal',    props:{tensile:515, maxTemp:870, density:8.0,  youngs:193, cost:3.5,  corrosion:8, machinability:5} },
-    { id:'ss316',  name:'RVS 316L',           category:'Metaal',    props:{tensile:560, maxTemp:870, density:8.0,  youngs:193, cost:4.5,  corrosion:9, machinability:5} },
-    { id:'ti64',   name:'Ti-6Al-4V',          category:'Metaal',    props:{tensile:950, maxTemp:400, density:4.43, youngs:114, cost:35,   corrosion:9, machinability:4} },
-    { id:'al6061', name:'Aluminium 6061-T6',  category:'Metaal',    props:{tensile:310, maxTemp:170, density:2.70, youngs:69,  cost:2.8,  corrosion:6, machinability:8} },
-    { id:'al7075', name:'Aluminium 7075-T6',  category:'Metaal',    props:{tensile:572, maxTemp:120, density:2.81, youngs:72,  cost:4.5,  corrosion:5, machinability:7} },
-    { id:'inc718', name:'Inconel 718',        category:'Metaal',    props:{tensile:1240,maxTemp:980, density:8.19, youngs:200, cost:45,   corrosion:9, machinability:2} },
-    { id:'mg31',   name:'Magnesium AZ31B',    category:'Metaal',    props:{tensile:260, maxTemp:150, density:1.77, youngs:45,  cost:4,    corrosion:3, machinability:8} },
-    { id:'castir', name:'Grijs gietijzer',    category:'Metaal',    props:{tensile:250, maxTemp:480, density:7.2,  youngs:110, cost:0.8,  corrosion:4, machinability:7} },
-    { id:'brass',  name:'Messing C260',       category:'Metaal',    props:{tensile:360, maxTemp:200, density:8.53, youngs:110, cost:5.5,  corrosion:7, machinability:8} },
-    { id:'becu',   name:'Berylliumkoper',     category:'Metaal',    props:{tensile:1300,maxTemp:200, density:8.25, youngs:128, cost:55,   corrosion:8, machinability:6} },
-    { id:'4140',   name:'Staal AISI 4140',    category:'Metaal',    props:{tensile:655, maxTemp:400, density:7.85, youngs:205, cost:1.5,  corrosion:4, machinability:6} },
-    { id:'w',      name:'Wolfraam',           category:'Metaal',    props:{tensile:980, maxTemp:1100,density:19.3, youngs:411, cost:35,   corrosion:7, machinability:2} },
-    { id:'peek',   name:'PEEK',               category:'Kunststof', props:{tensile:100, maxTemp:250, density:1.32, youngs:4,   cost:90,   corrosion:9, machinability:7} },
-    { id:'abs',    name:'ABS',                category:'Kunststof', props:{tensile:43,  maxTemp:80,  density:1.05, youngs:2,   cost:2.2,  corrosion:7, machinability:9} },
-    { id:'nylon',  name:'Nylon 66 GF30',      category:'Kunststof', props:{tensile:180, maxTemp:150, density:1.4,  youngs:9,   cost:5,    corrosion:8, machinability:6} },
-    { id:'ptfe',   name:'PTFE (Teflon)',      category:'Kunststof', props:{tensile:31,  maxTemp:260, density:2.2,  youngs:1,   cost:25,   corrosion:10,machinability:7} },
-    { id:'cfrp',   name:'CFRP (koolstof)',    category:'Composiet', props:{tensile:800, maxTemp:150, density:1.6,  youngs:70,  cost:30,   corrosion:9, machinability:3} },
-    { id:'gfrp',   name:'GFRP (glasvezel)',   category:'Composiet', props:{tensile:440, maxTemp:130, density:1.9,  youngs:30,  cost:8,    corrosion:8, machinability:4} },
-    { id:'al2o3',  name:'Aluminiumoxide',     category:'Keramiek',  props:{tensile:300, maxTemp:1500,density:3.9,  youngs:370, cost:18,   corrosion:10,machinability:1} },
-    { id:'sic',    name:'Siliciumcarbide',    category:'Keramiek',  props:{tensile:400, maxTemp:1600,density:3.1,  youngs:410, cost:50,   corrosion:10,machinability:1} },
+    { id:'ss304',  name:'RVS 304',            category:'Metaal',    props:{tensile:515, maxTemp:870, density:8.0,  youngs:193, cost:3.5,  corrosion:8, machinability:5}, desc:'Austenitisch roestvast staal; zeer corrosiebestendig, goed lasbaar, brede toepassing (voedsel, chemie, marine).' },
+    { id:'ss316',  name:'RVS 316L',           category:'Metaal',    props:{tensile:560, maxTemp:870, density:8.0,  youngs:193, cost:4.5,  corrosion:9, machinability:5}, desc:'Verbeterde variant van 304 met molybdeen; superieure corrosiebestendigheid in zout-/aggressieve omgeving.' },
+    { id:'ti64',   name:'Ti-6Al-4V',          category:'Metaal',    props:{tensile:950, maxTemp:400, density:4.43, youngs:114, cost:35,   corrosion:9, machinability:4}, desc:'Titaniumlegering; zeer sterk-gewichtsverhouding, laag gewicht, biocompatibel. Lastig te bewerken.' },
+    { id:'al6061', name:'Aluminium 6061-T6',  category:'Metaal',    props:{tensile:310, maxTemp:170, density:2.70, youngs:69,  cost:2.8,  corrosion:6, machinability:8}, desc:'Veelzijdig aluminium, goed lasbaar, bouwbaar. Standaard voor prototype & constructie.' },
+    { id:'al7075', name:'Aluminium 7075-T6',  category:'Metaal',    props:{tensile:572, maxTemp:120, density:2.81, youngs:72,  cost:4.5,  corrosion:5, machinability:7}, desc:'Hochesterkte aluminium; lucht-/ruimtevaart. Laag temperatuurgebied, moeilijker lasbaar.' },
+    { id:'inc718', name:'Inconel 718',        category:'Metaal',    props:{tensile:1240,maxTemp:980, density:8.19, youngs:200, cost:45,   corrosion:9, machinability:2}, desc:'Superlegering; extreme hittebestendigheid, zeer sterk tot 1000 °C. Gasturbines, raketten.' },
+    { id:'mg31',   name:'Magnesium AZ31B',    category:'Metaal',    props:{tensile:260, maxTemp:150, density:1.77, youngs:45,  cost:4,    corrosion:3, machinability:8}, desc:'Lichtste structuraal metaal; uitstekend sterkte/gewicht. Gevoelig voor corrosie, moet beschermd worden.' },
+    { id:'castir', name:'Grijs gietijzer',    category:'Metaal',    props:{tensile:250, maxTemp:480, density:7.2,  youngs:110, cost:0.8,  corrosion:4, machinability:7}, desc:'Goedkoop, gusbaar, slechte sterkte. Hoofdzakelijk voor blokken, frames (auto, machines).' },
+    { id:'brass',  name:'Messing C260',       category:'Metaal',    props:{tensile:360, maxTemp:200, density:8.53, youngs:110, cost:5.5,  corrosion:7, machinability:8}, desc:'Koper-zink legering; mooie afwerking, elektrische geleiding, decoratief & functioneel.' },
+    { id:'becu',   name:'Berylliumkoper',     category:'Metaal',    props:{tensile:1300,maxTemp:200, density:8.25, youngs:128, cost:55,   corrosion:8, machinability:6}, desc:'Zeer hoge sterkte, niet-magnetisch. Kostbaar, gezondheidsrisico's bij bewerking.' },
+    { id:'4140',   name:'Staal AISI 4140',    category:'Metaal',    props:{tensile:655, maxTemp:400, density:7.85, youngs:205, cost:1.5,  corrosion:4, machinability:6}, desc:'Geharde legerstaal; sterkte/taaigheid, goed lasbaar. Voertuigen, gereedschap, constructie.' },
+    { id:'w',      name:'Wolfraam',           category:'Metaal',    props:{tensile:980, maxTemp:1100,density:19.3, youngs:411, cost:35,   corrosion:7, machinability:2}, desc:'Zwaarste metaal, ongekend hoge smeltpunt (3422 °C). Voor extreme toepassingen, zeer moeilijk te bewerken.' },
+    { id:'peek',   name:'PEEK',               category:'Kunststof', props:{tensile:100, maxTemp:250, density:1.32, youngs:4,   cost:90,   corrosion:9, machinability:7}, desc:'Premium technische kunststof; autoclaa­f-bestendig, chemisch inert, medisch/aero. Zeer duur.' },
+    { id:'abs',    name:'ABS',                category:'Kunststof', props:{tensile:43,  maxTemp:80,  density:1.05, youngs:2,   cost:2.2,  corrosion:7, machinability:9}, props:{tensile:43,  maxTemp:80,  density:1.05, youngs:2,   cost:2.2,  corrosion:7, machinability:9}, desc:'Sterke, slagype kunststof; consumentenproducten, speelgoed, auto-interieur. Lage temperatuur.' },
+    { id:'nylon',  name:'Nylon 66 GF30',      category:'Kunststof', props:{tensile:180, maxTemp:150, density:1.4,  youngs:9,   cost:5,    corrosion:8, machinability:6}, desc:'Glasvezel versterkt nylon; stijf, slijtvast, engineering-grade. Motoren, tandwielen, behuizingen.' },
+    { id:'ptfe',   name:'PTFE (Teflon)',      category:'Kunststof', props:{tensile:31,  maxTemp:260, density:2.2,  youngs:1,   cost:25,   corrosion:10,machinability:7}, desc:'Non-stick, ultra-glad, inert. Lage wrijving, chemisch resistent. Zuigels, tapelingen, seals.' },
+    { id:'cfrp',   name:'CFRP (koolstof)',    category:'Composiet', props:{tensile:800, maxTemp:150, density:1.6,  youngs:70,  cost:30,   corrosion:9, machinability:3}, desc:'Koolstofdraad + epoxylijm; uitzonderlijk sterkte/gewicht. Ruimtevaart, sportwagens, hoogterugwinden.' },
+    { id:'gfrp',   name:'GFRP (glasvezel)',   category:'Composiet', props:{tensile:440, maxTemp:130, density:1.9,  youngs:30,  cost:8,    corrosion:8, machinability:4}, desc:'Glasvezel versterkte kunststof; betaalbare composiet, goed corrosiebestendig. Scheepshullen, tanks.' },
+    { id:'al2o3',  name:'Aluminiumoxide',     category:'Keramiek',  props:{tensile:300, maxTemp:1500,density:3.9,  youngs:370, cost:18,   corrosion:10,machinability:1}, desc:'Hoogtechnische keramiek; ultra-hittebestendig, zeer hard, slijtvast. Slijpsteen, smeltkroezen.' },
+    { id:'sic',    name:'Siliciumcarbide',    category:'Keramiek',  props:{tensile:400, maxTemp:1600,density:3.1,  youngs:410, cost:50,   corrosion:10,machinability:1}, desc:'Meest hardste keramiek; schurende toepassingen, oven-liners, halfgeleider-industrie.' },
+    { id:'copper', name:'Zuiver koper',       category:'Metaal',    props:{tensile:220, maxTemp:250, density:8.96, youngs:130, cost:12,   corrosion:6, machinability:7}, desc:'Uitstekende elektrische/thermische geleiding; loden, buizen, elektronica.' },
+    { id:'nickel', name:'Nickel 200',         category:'Metaal',    props:{tensile:380, maxTemp:900, density:8.9,  youngs:207, cost:18,   corrosion:9, machinability:3}, desc:'Corrosiebestendig, magnetisch. Batterijen, reactoren, coating (vernikkeling).' },
+    { id:'mold',   name:'Gereedschapsstaal',  category:'Metaal',    props:{tensile:900, maxTemp:400, density:7.7,  youngs:210, cost:8,    corrosion:5, machinability:3}, desc:'Verharde staalsoort voor mallen; hoge hardheid, slijtweerstand. P20-klasse populair.' },
+    { id:'pvc',    name:'PVC',                category:'Kunststof', props:{tensile:52,  maxTemp:70,  density:1.39, youngs:3.5, cost:1.5,  corrosion:9, machinability:8}, desc:'Budget kunststof; water-/chemiebestendig, veel verwendet. Buizen, ramen, kabels, zwem.' },
+    { id:'ldpe',   name:'LDPE',               category:'Kunststof', props:{tensile:8,   maxTemp:50,  density:0.92, youngs:0.17,cost:1.2,  corrosion:9, machinability:9}, desc:'Flexibel kunststof, zeer zacht. Verpakking, zakken, folie, speelgoed.' },
+    { id:'pc',     name:'Polycarbonaat',      category:'Kunststof', props:{tensile:65,  maxTemp:120, density:1.20, youngs:2.3, cost:4,    corrosion:7, machinability:6}, desc:'Helderglas-achtig, schokbestendig, UV-resistent. Bescherming, ramen, doorzichtige onderdelen.' },
+    { id:'alu2024',name:'Aluminium 2024-T3',  category:'Metaal',    props:{tensile:470, maxTemp:150, density:2.78, youngs:73,  cost:3.2,  corrosion:4, machinability:7}, desc:'Lucht-/ruimtevaartaluminium; zeer sterk. Gevoelig voor corrosie (moet blanketted worden).' },
+    { id:'steels', name:'Koolstofstaal (mild)',category:'Metaal',   props:{tensile:250, maxTemp:300, density:7.85, youngs:200, cost:0.5,  corrosion:2, machinability:8}, desc:'Goedkoopste constructiestaal; bouwwerk, bruggen. Corrosie-risico zonder coatingschutz.' },
+    { id:'kevlar', name:'Kevlar (aramide)',    category:'Composiet', props:{tensile:620, maxTemp:200, density:1.44, youngs:80,  cost:40,   corrosion:9, machinability:2}, desc:'Vijf keer sterker dan staal (gewicht), kogelwerend, thermisch stabiel. Kogelvast, zeil, koord.' },
   ];
 
   PRIO_W = { must:8, high:4, med:2, low:1 };
@@ -354,6 +358,8 @@ class Component extends DCLogic {
     query: '',
     sortBy: 'score',
     selected: [],
+    favorites: [],
+    detailId: null,
     reqs: [
       this.mk('tensile','gte',400,'high'),
       this.mk('maxTemp','gte',300,'must'),
@@ -375,6 +381,26 @@ class Component extends DCLogic {
   addReq(key){ const m=this.PROPS[key]; const op=m.dir==='higher'?'gte':'lte'; const val=Math.round((m.min+m.max)/2/m.step)*m.step; this.setState(s=>({reqs:[...s.reqs, this.mk(key, op, val, 'med')]})); }
   setSort(key){ this.setState({sortBy:key}); }
   toggleSelect(id){ const max=this.props.maxCompare ?? 4; this.setState(s=>{ const has=s.selected.includes(id); if(has) return {selected:s.selected.filter(x=>x!==id)}; if(s.selected.length>=max) return {}; return {selected:[...s.selected, id]}; }); }
+  toggleFavorite(id){ this.setState(s=>{ const has=s.favorites.includes(id); return {favorites: has ? s.favorites.filter(x=>x!==id) : [...s.favorites, id]}; }); }
+  openDetail(id){ this.setState({detailId:id}); }
+  closeDetail(){ this.setState({detailId:null}); }
+  exportCSV(){
+    const P=this.PROPS, reqs=this.state.reqs, scored=this.MATERIALS.map(mat=>{
+      let cells=[]; reqs.forEach(r=>{ const m=P[r.key], val=mat.props[r.key]; cells.push(this.fmt(val,m.decimals)); });
+      let wsum=0, fsum=0, passCount=0, hardFail=false;
+      reqs.forEach(r=>{ const m=P[r.key], val=mat.props[r.key], w=this.PRIO_W[r.priority];
+        let fit = r.op==='gte' ? (val>=r.value?1:this.clamp(val/r.value,0,1)) : (val<=r.value?1:this.clamp(r.value/val,0,1));
+        if(fit>=0.999) passCount++; if(fit<0.999 && r.priority==='must') hardFail=true;
+        wsum+=w; fsum+=w*fit;
+      });
+      const score = wsum ? Math.round(100*fsum/wsum) : 0;
+      return [mat.name, mat.category, String(score), hardFail?'NIET GESCHIKT':'OK', ...cells];
+    });
+    const headers=['Materiaal','Categorie','Match %','Status',...reqs.map(r=>this.PROPS[r.key].label)];
+    const csv=[headers, ...scored].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='matera-materialen.csv'; a.click();
+  }; }
 
   applyExample(kind){
     let q='', reqs=[];
