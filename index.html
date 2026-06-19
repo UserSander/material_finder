@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:oklch(0.88 0.01 250);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:oklch(0.55 0.14 245);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+input[type=number]{font-family:'IBM Plex Mono',monospace;}
+::-webkit-scrollbar{width:11px;height:11px;}
+::-webkit-scrollbar-thumb{background:oklch(0.86 0.008 250);border-radius:6px;border:3px solid transparent;background-clip:padding-box;}
+::-webkit-scrollbar-thumb:hover{background:oklch(0.78 0.01 250);background-clip:padding-box;}
+</style>
+</helmet>
+<div style="font-family:'IBM Plex Sans',sans-serif;color:oklch(0.27 0.012 255);background:oklch(0.96 0.005 250);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px;">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;flex:none;background:#fff;border-bottom:1px solid oklch(0.9 0.006 250);">
+    <div style="display:flex;align-items:center;gap:11px;">
+      <div style="width:26px;height:26px;border-radius:6px;background:oklch(0.55 0.14 245);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;font-family:'IBM Plex Mono',monospace;">M</div>
+      <div style="display:flex;flex-direction:column;line-height:1.15;">
+        <span style="font-weight:700;font-size:15px;letter-spacing:-0.01em;">Matera</span>
+        <span style="font-size:10.5px;color:oklch(0.6 0.01 255);letter-spacing:0.02em;">materiaalselectie voor engineers</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span style="font-size:11px;color:oklch(0.6 0.01 255);">weergave</span>
+      <div style="display:flex;background:oklch(0.95 0.005 250);border:1px solid oklch(0.9 0.006 250);border-radius:8px;padding:3px;gap:3px;">
+        <button onClick="{{goA}}" style="border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;background:{{aBg}};color:{{aFg}};">Filter + tabel</button>
+        <button onClick="{{goB}}" style="border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;background:{{bBg}};color:{{bFg}};">AI + match-kaarten</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============== RICHTING A ============== -->
+  <sc-if value="{{dirA}}" hint-placeholder-val="{{true}}">
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 18px;background:#fff;border-bottom:1px solid oklch(0.9 0.006 250);flex:none;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#fff;background:oklch(0.55 0.14 245);padding:3px 7px;border-radius:5px;letter-spacing:0.04em;">AI</span>
+      <input value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onQueryKey}}" placeholder="Beschrijf je toepassing in gewone taal — bv. ‘licht onderdeel dat 300 °C moet houden en redelijk sterk is’" style="flex:1;border:1px solid oklch(0.9 0.006 250);border-radius:7px;padding:8px 12px;font-family:inherit;font-size:13px;color:inherit;outline:none;background:oklch(0.98 0.003 250);" />
+      <button onClick="{{onParse}}" style="border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:8px 16px;border-radius:7px;background:oklch(0.55 0.14 245);color:#fff;">Vertaal naar eisen</button>
+    </div>
+
+    <div style="flex:1;display:flex;min-height:0;">
+      <!-- requirements -->
+      <aside style="width:340px;flex:none;background:#fff;border-right:1px solid oklch(0.9 0.006 250);overflow-y:auto;padding:16px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">
+          <h2 style="margin:0;font-size:14px;font-weight:700;">Eisen &amp; prioriteiten</h2>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.6 0.01 255);">{{reqCount}}</span>
+        </div>
+        <p style="margin:0 0 14px;font-size:11.5px;color:oklch(0.58 0.01 255);line-height:1.45;">Stel per eigenschap je grens in en bepaal hoe zwaar die meeweegt in de match-score.</p>
+
+        <sc-for list="{{activeReqs}}" as="req" hint-placeholder-count="4">
+          <div style="border:1px solid oklch(0.9 0.006 250);border-radius:9px;padding:12px;margin-bottom:9px;background:oklch(0.985 0.003 250);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-weight:600;font-size:13px;">{{req.label}}</span>
+              <button onClick="{{req.onRemove}}" style="border:none;background:transparent;cursor:pointer;color:oklch(0.65 0.01 255);font-size:16px;line-height:1;padding:0 2px;">×</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+              <button onClick="{{req.onToggleOp}}" style="flex:none;width:36px;height:32px;border:1px solid oklch(0.86 0.006 250);background:#fff;border-radius:7px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:oklch(0.55 0.14 245);">{{req.opLabel}}</button>
+              <input type="number" value="{{req.value}}" onChange="{{req.onValue}}" style="flex:1;width:0;height:32px;border:1px solid oklch(0.86 0.006 250);border-radius:7px;padding:0 10px;font-size:14px;font-weight:600;outline:none;color:inherit;" />
+              <span style="flex:none;width:50px;font-size:11px;color:oklch(0.58 0.01 255);font-family:'IBM Plex Mono',monospace;">{{req.unit}}</span>
+            </div>
+            <input type="range" min="{{req.min}}" max="{{req.max}}" step="{{req.step}}" value="{{req.value}}" onInput="{{req.onValue}}" style="width:100%;margin:0 0 11px;" />
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:10.5px;color:oklch(0.6 0.01 255);flex:none;">weegt</span>
+              <div style="display:flex;gap:4px;flex:1;">
+                <sc-for list="{{req.priorityOptions}}" as="po">
+                  <button onClick="{{po.onClick}}" style="flex:1;font-family:inherit;font-size:10.5px;font-weight:600;padding:5px 0;border-radius:6px;cursor:pointer;border:1px solid {{po.borderColor}};background:{{po.bg}};color:{{po.fg}};">{{po.label}}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+
+        <select value="{{addValue}}" onChange="{{onAddProp}}" style="width:100%;margin-top:4px;padding:9px 10px;border:1px dashed oklch(0.82 0.006 250);border-radius:8px;background:#fff;font-family:inherit;font-size:12.5px;color:oklch(0.5 0.01 255);cursor:pointer;">
+          <option value="">+ eigenschap toevoegen</option>
+          <sc-for list="{{unusedProps}}" as="up"><option value="{{up.key}}">{{up.label}}</option></sc-for>
+        </select>
+      </aside>
+
+      <!-- results -->
+      <main style="flex:1;overflow-y:auto;padding:18px 20px;min-width:0;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;">
+          <div style="display:flex;align-items:baseline;gap:10px;">
+            <h2 style="margin:0;font-size:15px;font-weight:700;">Materialen</h2>
+            <span style="font-size:12px;color:oklch(0.58 0.01 255);"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:oklch(0.4 0.01 255);">{{resultCount}}</span> kandidaten · gesorteerd op match</span>
+          </div>
+          <span style="font-size:11px;color:oklch(0.62 0.01 255);">klik een kolomkop om te sorteren</span>
+        </div>
+
+        <div style="border:1px solid oklch(0.9 0.006 250);border-radius:10px;overflow:hidden;background:#fff;">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+            <thead>
+              <tr style="background:oklch(0.97 0.004 250);">
+                <th style="text-align:center;padding:9px 6px;font-weight:600;font-size:10.5px;color:oklch(0.55 0.01 255);border-bottom:1px solid oklch(0.9 0.006 250);width:54px;">vgl.</th>
+                <th onClick="{{onSortScore}}" style="text-align:left;padding:9px 12px;font-weight:600;font-size:11px;color:oklch(0.45 0.01 255);border-bottom:1px solid oklch(0.9 0.006 250);cursor:pointer;width:96px;">Match {{scoreCaret}}</th>
+                <th style="text-align:left;padding:9px 12px;font-weight:600;font-size:11px;color:oklch(0.45 0.01 255);border-bottom:1px solid oklch(0.9 0.006 250);">Materiaal</th>
+                <sc-for list="{{columns}}" as="col">
+                  <th onClick="{{col.onSort}}" style="text-align:right;padding:9px 12px;font-weight:600;font-size:11px;color:{{col.headColor}};border-bottom:1px solid oklch(0.9 0.006 250);cursor:pointer;white-space:nowrap;">{{col.label}} {{col.caret}}<br><span style="font-weight:400;font-size:10px;color:oklch(0.62 0.01 255);font-family:'IBM Plex Mono',monospace;">{{col.unit}}</span></th>
+                </sc-for>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="row" hint-placeholder-count="8">
+                <tr style="border-bottom:1px solid oklch(0.94 0.004 250);background:{{row.rowBg}};">
+                  <td style="text-align:center;padding:8px 6px;">
+                    <button onClick="{{row.onToggle}}" style="width:22px;height:22px;border-radius:6px;cursor:pointer;border:1px solid {{row.checkBorder}};background:{{row.checkBg}};color:#fff;font-size:13px;line-height:1;font-weight:700;">{{row.checkMark}}</button>
+                  </td>
+                  <td style="padding:8px 12px;">
+                    <div style="display:inline-flex;align-items:center;gap:6px;">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;color:{{row.scoreColor}};background:{{row.scoreBg}};padding:3px 8px;border-radius:6px;">{{row.scoreText}}</span>
+                      <span style="font-size:10px;color:oklch(0.62 0.01 255);font-family:'IBM Plex Mono',monospace;">{{row.passText}}</span>
+                    </div>
+                  </td>
+                  <td style="padding:8px 12px;">
+                    <div style="font-weight:600;font-size:13px;">{{row.name}}</div>
+                    <div style="display:flex;align-items:center;gap:7px;margin-top:2px;">
+                      <span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;background:{{row.chipBg}};color:{{row.chipFg}};">{{row.category}}</span>
+                      <sc-if value="{{row.hardFail}}" hint-placeholder-val="{{false}}"><span style="font-size:10px;color:oklch(0.55 0.18 25);">✕ {{row.flagText}}</span></sc-if>
+                    </div>
+                  </td>
+                  <sc-for list="{{row.cells}}" as="cell">
+                    <td style="text-align:right;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-weight:500;color:{{cell.color}};">{{cell.text}}</td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <sc-if value="{{hasCompare}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:20px;border:1px solid oklch(0.9 0.006 250);border-radius:10px;background:#fff;overflow:hidden;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid oklch(0.92 0.005 250);background:oklch(0.97 0.004 250);">
+              <h3 style="margin:0;font-size:13px;font-weight:700;">Vergelijken · <span style="font-family:'IBM Plex Mono',monospace;">{{compareCount}}</span></h3>
+              <button onClick="{{onClearCompare}}" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:11.5px;color:oklch(0.55 0.14 245);font-weight:600;">wis selectie</button>
+            </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+                <thead><tr>
+                  <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:oklch(0.55 0.01 255);border-bottom:1px solid oklch(0.92 0.005 250);">Eigenschap</th>
+                  <sc-for list="{{compareCols}}" as="col">
+                    <th style="text-align:right;padding:10px 14px;border-bottom:1px solid oklch(0.92 0.005 250);min-width:120px;">
+                      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-weight:700;font-size:12.5px;">{{col.name}}</span><button onClick="{{col.onRemove}}" style="border:none;background:transparent;cursor:pointer;color:oklch(0.68 0.01 255);font-size:14px;line-height:1;">×</button></div>
+                    </th>
+                  </sc-for>
+                </tr></thead>
+                <tbody>
+                  <sc-for list="{{compareRows}}" as="r">
+                    <tr style="border-bottom:1px solid oklch(0.95 0.004 250);">
+                      <td style="padding:8px 14px;color:oklch(0.45 0.01 255);">{{r.label}} <span style="font-size:10px;color:oklch(0.62 0.01 255);font-family:'IBM Plex Mono',monospace;">{{r.unit}}</span></td>
+                      <sc-for list="{{r.cells}}" as="cell">
+                        <td style="text-align:right;padding:8px 14px;font-family:'IBM Plex Mono',monospace;color:{{cell.color}};font-weight:{{cell.weight}};">{{cell.text}}</td>
+                      </sc-for>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </sc-if>
+      </main>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============== RICHTING B ============== -->
+  <sc-if value="{{dirB}}" hint-placeholder-val="{{false}}">
+  <div style="flex:1;overflow-y:auto;">
+    <div style="max-width:1080px;margin:0 auto;padding:34px 24px 60px;">
+      <div style="text-align:center;margin-bottom:22px;">
+        <h1 style="margin:0 0 6px;font-size:27px;font-weight:700;letter-spacing:-0.02em;">Welk materiaal heb je nodig?</h1>
+        <p style="margin:0;font-size:13.5px;color:oklch(0.55 0.01 255);">Beschrijf je onderdeel. De AI vertaalt het naar meetbare eisen en rangschikt alle materialen op match.</p>
+      </div>
+      <div style="display:flex;gap:10px;max-width:720px;margin:0 auto 12px;">
+        <input value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onQueryKey}}" placeholder="bv. ‘goedkoop, corrosiebestendig beugeltje voor buiten’" style="flex:1;border:1px solid oklch(0.88 0.006 250);border-radius:10px;padding:13px 16px;font-family:inherit;font-size:14px;color:inherit;outline:none;box-shadow:0 1px 2px rgba(0,0,0,.03);" />
+        <button onClick="{{onParse}}" style="border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;padding:0 22px;border-radius:10px;background:oklch(0.55 0.14 245);color:#fff;">Zoek</button>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:26px;">
+        <sc-for list="{{examples}}" as="ex">
+          <button onClick="{{ex.onClick}}" style="border:1px solid oklch(0.9 0.006 250);background:#fff;cursor:pointer;font-family:inherit;font-size:11.5px;color:oklch(0.5 0.01 255);padding:6px 12px;border-radius:20px;">{{ex.label}}</button>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#fff;background:oklch(0.55 0.14 245);padding:3px 7px;border-radius:5px;">AI</span>
+        <span style="font-size:12.5px;color:oklch(0.5 0.01 255);">vertaald naar <span style="font-weight:600;color:oklch(0.35 0.01 255);">{{reqCount}}</span> meetbare eisen — pas ze aan:</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;">
+        <sc-for list="{{activeReqs}}" as="req" hint-placeholder-count="4">
+          <div style="border:1px solid oklch(0.9 0.006 250);border-radius:10px;padding:11px 13px;background:#fff;display:flex;flex-direction:column;gap:9px;min-width:184px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:600;font-size:12.5px;">{{req.label}}</span>
+              <button onClick="{{req.onRemove}}" style="border:none;background:transparent;cursor:pointer;color:oklch(0.68 0.01 255);font-size:15px;line-height:1;">×</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;">
+              <button onClick="{{req.onToggleOp}}" style="flex:none;width:30px;height:28px;border:1px solid oklch(0.86 0.006 250);background:#fff;border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:oklch(0.55 0.14 245);">{{req.opLabel}}</button>
+              <button onClick="{{req.onStepDown}}" style="flex:none;width:26px;height:28px;border:1px solid oklch(0.86 0.006 250);background:oklch(0.97 0.004 250);border-radius:6px;cursor:pointer;font-size:15px;line-height:1;color:oklch(0.4 0.01 255);">−</button>
+              <span style="flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;">{{req.valueText}}</span>
+              <button onClick="{{req.onStepUp}}" style="flex:none;width:26px;height:28px;border:1px solid oklch(0.86 0.006 250);background:oklch(0.97 0.004 250);border-radius:6px;cursor:pointer;font-size:15px;line-height:1;color:oklch(0.4 0.01 255);">+</button>
+              <span style="flex:none;font-size:10.5px;color:oklch(0.58 0.01 255);font-family:'IBM Plex Mono',monospace;width:34px;">{{req.unit}}</span>
+            </div>
+            <div style="display:flex;gap:3px;">
+              <sc-for list="{{req.priorityOptions}}" as="po">
+                <button onClick="{{po.onClick}}" style="flex:1;font-family:inherit;font-size:10px;font-weight:600;padding:4px 0;border-radius:5px;cursor:pointer;border:1px solid {{po.borderColor}};background:{{po.bg}};color:{{po.fg}};">{{po.label}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <select value="{{addValue}}" onChange="{{onAddProp}}" style="align-self:flex-start;padding:11px 12px;border:1px dashed oklch(0.82 0.006 250);border-radius:10px;background:#fff;font-family:inherit;font-size:12px;color:oklch(0.5 0.01 255);cursor:pointer;">
+          <option value="">+ eigenschap</option>
+          <sc-for list="{{unusedProps}}" as="up"><option value="{{up.key}}">{{up.label}}</option></sc-for>
+        </select>
+      </div>
+
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;">
+        <h2 style="margin:0;font-size:16px;font-weight:700;">Beste matches</h2>
+        <span style="font-size:12px;color:oklch(0.58 0.01 255);"><span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:oklch(0.4 0.01 255);">{{resultCount}}</span> materialen beoordeeld</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+        <sc-for list="{{rows}}" as="row" hint-placeholder-count="6">
+          <div style="border:1px solid {{row.cardBorder}};border-radius:12px;background:#fff;padding:16px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.03);">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.62 0.01 255);">#{{row.rankText}}</span>
+                  <span style="font-weight:700;font-size:15px;letter-spacing:-0.01em;">{{row.name}}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:5px;">
+                  <span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:4px;background:{{row.chipBg}};color:{{row.chipFg}};">{{row.category}}</span>
+                  <span style="font-size:10.5px;color:oklch(0.58 0.01 255);font-family:'IBM Plex Mono',monospace;">{{row.passText}} eisen</span>
+                </div>
+              </div>
+              <div style="flex:none;width:54px;height:54px;border-radius:50%;background:conic-gradient({{row.scoreColor}} {{row.ringDeg}}deg, oklch(0.91 0.006 250) 0deg);display:flex;align-items:center;justify-content:center;">
+                <div style="width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;color:{{row.scoreColor}};">{{row.scoreText}}</div>
+              </div>
+            </div>
+            <sc-if value="{{showReason}}" hint-placeholder-val="{{true}}">
+              <p style="margin:0 0 13px;font-size:12px;line-height:1.5;color:{{row.reasonColor}};border-left:2px solid {{row.scoreColor}};padding-left:9px;">{{row.reason}}</p>
+            </sc-if>
+            <div style="margin-bottom:13px;">
+              <sc-for list="{{row.bars}}" as="bar">
+                <div style="margin-bottom:9px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                    <span style="color:oklch(0.52 0.01 255);">{{bar.label}} <span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.65 0.01 255);">{{bar.opLabel}} {{bar.reqText}}</span></span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:{{bar.color}};">{{bar.valText}} {{bar.unit}}</span>
+                  </div>
+                  <div style="position:relative;height:6px;border-radius:3px;background:oklch(0.94 0.005 250);">
+                    <div style="position:absolute;left:0;top:0;height:100%;border-radius:3px;width:{{bar.pct}}%;background:{{bar.color}};"></div>
+                    <div style="position:absolute;top:-3px;height:12px;width:2px;background:oklch(0.4 0.01 255);left:{{bar.markPct}}%;"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{row.onToggle}}" style="margin-top:auto;border:1px solid {{row.btnBorder}};background:{{row.btnBg}};color:{{row.btnFg}};cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:8px 0;border-radius:8px;width:100%;">{{row.selectLabel}}</button>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{hasCompare}}" hint-placeholder-val="{{false}}">
+        <div style="margin-top:26px;border:1px solid oklch(0.9 0.006 250);border-radius:12px;background:#fff;overflow:hidden;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid oklch(0.92 0.005 250);background:oklch(0.97 0.004 250);">
+            <h3 style="margin:0;font-size:14px;font-weight:700;">Vergelijken · <span style="font-family:'IBM Plex Mono',monospace;">{{compareCount}}</span></h3>
+            <button onClick="{{onClearCompare}}" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;color:oklch(0.55 0.14 245);font-weight:600;">wis selectie</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+              <thead><tr>
+                <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;color:oklch(0.55 0.01 255);border-bottom:1px solid oklch(0.92 0.005 250);">Eigenschap</th>
+                <sc-for list="{{compareCols}}" as="col">
+                  <th style="text-align:right;padding:11px 16px;border-bottom:1px solid oklch(0.92 0.005 250);min-width:130px;">
+                    <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;"><span style="font-weight:700;font-size:13px;">{{col.name}}</span><button onClick="{{col.onRemove}}" style="border:none;background:transparent;cursor:pointer;color:oklch(0.68 0.01 255);font-size:15px;line-height:1;">×</button></div>
+                  </th>
+                </sc-for>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{compareRows}}" as="r">
+                  <tr style="border-bottom:1px solid oklch(0.95 0.004 250);">
+                    <td style="padding:9px 16px;color:oklch(0.45 0.01 255);">{{r.label}} <span style="font-size:10px;color:oklch(0.62 0.01 255);font-family:'IBM Plex Mono',monospace;">{{r.unit}}</span></td>
+                    <sc-for list="{{r.cells}}" as="cell">
+                      <td style="text-align:right;padding:9px 16px;font-family:'IBM Plex Mono',monospace;color:{{cell.color}};font-weight:{{cell.weight}};">{{cell.text}}</td>
+                    </sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="oklch(0.55 0.14 245)"/><g fill="#fff"><rect x="30" y="30" width="40" height="7" rx="2"/><rect x="30" y="44" width="40" height="7" rx="2" opacity="0.7"/><rect x="30" y="58" width="26" height="7" rx="2" opacity="0.45"/></g></svg></template></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 900 },
+  &quot;defaultView&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;A&quot;, &quot;B&quot;], &quot;default&quot;: &quot;A&quot;, &quot;tsType&quot;: &quot;'A'|'B'&quot; },
+  &quot;showAiReason&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; },
+  &quot;maxCompare&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 4, &quot;min&quot;: 2, &quot;max&quot;: 6, &quot;tsType&quot;: &quot;number&quot; }
+}">
+class Component extends DCLogic {
+  PROPS = {
+    tensile:      { label:'Treksterkte',          unit:'MPa',   min:0, max:1400, step:10,  dir:'higher', decimals:0 },
+    maxTemp:      { label:'Max. temperatuur',     unit:'°C',    min:0, max:1600, step:10,  dir:'higher', decimals:0 },
+    density:      { label:'Dichtheid',            unit:'g/cm³', min:0, max:20,   step:0.05,dir:'lower',  decimals:2 },
+    youngs:       { label:'E-modulus',            unit:'GPa',   min:0, max:450,  step:5,   dir:'higher', decimals:0 },
+    cost:         { label:'Kosten',               unit:'€/kg',  min:0, max:100,  step:0.5, dir:'lower',  decimals:1 },
+    corrosion:    { label:'Corrosiebestendigheid',unit:'/10',   min:0, max:10,   step:1,   dir:'higher', decimals:0 },
+    machinability:{ label:'Bewerkbaarheid',       unit:'/10',   min:0, max:10,   step:1,   dir:'higher', decimals:0 },
+  };
+
+  MATERIALS = [
+    { id:'ss304',  name:'RVS 304',            category:'Metaal',    props:{tensile:515, maxTemp:870, density:8.0,  youngs:193, cost:3.5,  corrosion:8, machinability:5} },
+    { id:'ss316',  name:'RVS 316L',           category:'Metaal',    props:{tensile:560, maxTemp:870, density:8.0,  youngs:193, cost:4.5,  corrosion:9, machinability:5} },
+    { id:'ti64',   name:'Ti-6Al-4V',          category:'Metaal',    props:{tensile:950, maxTemp:400, density:4.43, youngs:114, cost:35,   corrosion:9, machinability:4} },
+    { id:'al6061', name:'Aluminium 6061-T6',  category:'Metaal',    props:{tensile:310, maxTemp:170, density:2.70, youngs:69,  cost:2.8,  corrosion:6, machinability:8} },
+    { id:'al7075', name:'Aluminium 7075-T6',  category:'Metaal',    props:{tensile:572, maxTemp:120, density:2.81, youngs:72,  cost:4.5,  corrosion:5, machinability:7} },
+    { id:'inc718', name:'Inconel 718',        category:'Metaal',    props:{tensile:1240,maxTemp:980, density:8.19, youngs:200, cost:45,   corrosion:9, machinability:2} },
+    { id:'mg31',   name:'Magnesium AZ31B',    category:'Metaal',    props:{tensile:260, maxTemp:150, density:1.77, youngs:45,  cost:4,    corrosion:3, machinability:8} },
+    { id:'castir', name:'Grijs gietijzer',    category:'Metaal',    props:{tensile:250, maxTemp:480, density:7.2,  youngs:110, cost:0.8,  corrosion:4, machinability:7} },
+    { id:'brass',  name:'Messing C260',       category:'Metaal',    props:{tensile:360, maxTemp:200, density:8.53, youngs:110, cost:5.5,  corrosion:7, machinability:8} },
+    { id:'becu',   name:'Berylliumkoper',     category:'Metaal',    props:{tensile:1300,maxTemp:200, density:8.25, youngs:128, cost:55,   corrosion:8, machinability:6} },
+    { id:'4140',   name:'Staal AISI 4140',    category:'Metaal',    props:{tensile:655, maxTemp:400, density:7.85, youngs:205, cost:1.5,  corrosion:4, machinability:6} },
+    { id:'w',      name:'Wolfraam',           category:'Metaal',    props:{tensile:980, maxTemp:1100,density:19.3, youngs:411, cost:35,   corrosion:7, machinability:2} },
+    { id:'peek',   name:'PEEK',               category:'Kunststof', props:{tensile:100, maxTemp:250, density:1.32, youngs:4,   cost:90,   corrosion:9, machinability:7} },
+    { id:'abs',    name:'ABS',                category:'Kunststof', props:{tensile:43,  maxTemp:80,  density:1.05, youngs:2,   cost:2.2,  corrosion:7, machinability:9} },
+    { id:'nylon',  name:'Nylon 66 GF30',      category:'Kunststof', props:{tensile:180, maxTemp:150, density:1.4,  youngs:9,   cost:5,    corrosion:8, machinability:6} },
+    { id:'ptfe',   name:'PTFE (Teflon)',      category:'Kunststof', props:{tensile:31,  maxTemp:260, density:2.2,  youngs:1,   cost:25,   corrosion:10,machinability:7} },
+    { id:'cfrp',   name:'CFRP (koolstof)',    category:'Composiet', props:{tensile:800, maxTemp:150, density:1.6,  youngs:70,  cost:30,   corrosion:9, machinability:3} },
+    { id:'gfrp',   name:'GFRP (glasvezel)',   category:'Composiet', props:{tensile:440, maxTemp:130, density:1.9,  youngs:30,  cost:8,    corrosion:8, machinability:4} },
+    { id:'al2o3',  name:'Aluminiumoxide',     category:'Keramiek',  props:{tensile:300, maxTemp:1500,density:3.9,  youngs:370, cost:18,   corrosion:10,machinability:1} },
+    { id:'sic',    name:'Siliciumcarbide',    category:'Keramiek',  props:{tensile:400, maxTemp:1600,density:3.1,  youngs:410, cost:50,   corrosion:10,machinability:1} },
+  ];
+
+  PRIO_W = { must:8, high:4, med:2, low:1 };
+  PRIO_LABEL = { must:'Must', high:'Hoog', med:'Mid', low:'Laag' };
+  BRAND = 'oklch(0.55 0.14 245)';
+  GREEN = 'oklch(0.55 0.13 150)';
+  AMBER = 'oklch(0.64 0.13 70)';
+  RED   = 'oklch(0.56 0.18 25)';
+
+  _id = 0;
+  state = {
+    direction: this.props.defaultView ?? 'A',
+    query: '',
+    sortBy: 'score',
+    selected: [],
+    reqs: [
+      this.mk('tensile','gte',400,'high'),
+      this.mk('maxTemp','gte',300,'must'),
+      this.mk('density','lte',5,'med'),
+      this.mk('cost','lte',40,'low'),
+    ],
+  };
+
+  mk(key, op, value, priority) { return { id:'r'+(++this._id), key, op, value, priority }; }
+  clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  fmt(v,d){ const n=Number(v); if(!isFinite(n)) return '–'; return d>0 ? n.toFixed(d) : String(Math.round(n)); }
+
+  setReqValue(id, raw){ const v=Number(raw); if(!isFinite(v))return; this.setState(s=>({reqs:s.reqs.map(r=>{ if(r.id!==id)return r; const m=this.PROPS[r.key]; return {...r, value:this.clamp(v,m.min,m.max)}; })})); }
+  stepReq(id, dir){ this.setState(s=>({reqs:s.reqs.map(r=>{ if(r.id!==id)return r; const m=this.PROPS[r.key]; return {...r, value:this.clamp(+(r.value+dir*m.step).toFixed(4), m.min, m.max)}; })})); }
+  toggleOp(id){ this.setState(s=>({reqs:s.reqs.map(r=> r.id===id ? {...r, op: r.op==='gte'?'lte':'gte'} : r)})); }
+  setPriority(id,p){ this.setState(s=>({reqs:s.reqs.map(r=> r.id===id ? {...r, priority:p} : r)})); }
+  cyclePriority(id){ const order=['low','med','high','must']; this.setState(s=>({reqs:s.reqs.map(r=>{ if(r.id!==id)return r; return {...r, priority: order[(order.indexOf(r.priority)+1)%4]}; })})); }
+  removeReq(id){ this.setState(s=>({reqs:s.reqs.filter(r=>r.id!==id)})); }
+  addReq(key){ const m=this.PROPS[key]; const op=m.dir==='higher'?'gte':'lte'; const val=Math.round((m.min+m.max)/2/m.step)*m.step; this.setState(s=>({reqs:[...s.reqs, this.mk(key, op, val, 'med')]})); }
+  setSort(key){ this.setState({sortBy:key}); }
+  toggleSelect(id){ const max=this.props.maxCompare ?? 4; this.setState(s=>{ const has=s.selected.includes(id); if(has) return {selected:s.selected.filter(x=>x!==id)}; if(s.selected.length>=max) return {}; return {selected:[...s.selected, id]}; }); }
+
+  applyExample(kind){
+    let q='', reqs=[];
+    if(kind==='light'){ q='Lichte beugel, moet 300 °C aankunnen, redelijk sterk'; reqs=[this.mk('maxTemp','gte',300,'must'),this.mk('density','lte',3,'high'),this.mk('tensile','gte',350,'med')]; }
+    else if(kind==='cheap'){ q='Goedkoop onderdeel, corrosiebestendig voor buiten'; reqs=[this.mk('cost','lte',5,'high'),this.mk('corrosion','gte',8,'high'),this.mk('tensile','gte',200,'med')]; }
+    else { q='Stijf en hittebestendig, kosten minder belangrijk'; reqs=[this.mk('youngs','gte',200,'high'),this.mk('maxTemp','gte',800,'must'),this.mk('density','lte',9,'low')]; }
+    this.setState({query:q, reqs});
+  }
+
+  parseQuery(){
+    const t=(this.state.query||'').toLowerCase();
+    const reqs=[]; const have={};
+    const add=(key,op,val,prio)=>{ if(have[key])return; have[key]=true; reqs.push(this.mk(key,op,val,prio)); };
+    let m;
+    if((m=t.match(/(\d{2,4})\s*(°|graden|celsius|c\b)/))) add('maxTemp','gte',this.clamp(+m[1],0,1600),'must');
+    if((m=t.match(/(\d{2,4})\s*mpa/))) add('tensile','gte',this.clamp(+m[1],0,1400),'high');
+    if((m=t.match(/(\d{1,3})\s*gpa/))) add('youngs','gte',this.clamp(+m[1],0,450),'high');
+    if((m=t.match(/(\d{1,3})\s*(€|euro|eur)/))) add('cost','lte',this.clamp(+m[1],0,100),'high');
+    if(/licht|lichtgewicht|gewicht|laag gewicht/.test(t)) add('density','lte',3,'high');
+    if(/goedkoop|budget|betaalbaar|lage kosten/.test(t)) add('cost','lte',5,'high');
+    if(/corrosie|roest|zout|buiten|marine|weersbestendig/.test(t)) add('corrosion','gte',8,'high');
+    if(/stijf|stijfheid|rigide/.test(t)) add('youngs','gte',200,'high');
+    if(/hitte|warm|heet|hoge temp/.test(t)) add('maxTemp','gte',500,'high');
+    if(/sterk|sterkte|belast/.test(t)) add('tensile','gte',400,'med');
+    if(reqs.length) this.setState({reqs});
+  }
+
+  scoreColors(s, hf){
+    if(hf) return { fg:this.RED, bg:'oklch(0.96 0.04 25)' };
+    if(s>=85) return { fg:this.GREEN, bg:'oklch(0.96 0.04 150)' };
+    if(s>=68) return { fg:this.AMBER, bg:'oklch(0.96 0.05 80)' };
+    return { fg:this.RED, bg:'oklch(0.96 0.04 25)' };
+  }
+  catColors(cat){
+    const map={ Metaal:['oklch(0.94 0.025 245)','oklch(0.44 0.09 245)'], Kunststof:['oklch(0.94 0.04 150)','oklch(0.4 0.1 150)'], Composiet:['oklch(0.94 0.04 305)','oklch(0.44 0.11 305)'], Keramiek:['oklch(0.95 0.04 60)','oklch(0.44 0.09 60)'] };
+    return map[cat] || ['oklch(0.94 0.005 250)','oklch(0.45 0.01 250)'];
+  }
+  reason(s){
+    if(s.hardFail) return 'Valt af: ' + s.failLabels.join(', ').toLowerCase() + ' buiten het vereiste bereik.';
+    const parts=[];
+    if(s.passCount===s.total) parts.push('Voldoet aan alle ' + s.total + ' eisen.');
+    else parts.push('Voldoet aan je must-haves; ' + (s.total-s.passCount) + ' wens net niet gehaald.');
+    if(s.strongest) parts.push('Ruim binnen de eis voor ' + s.strongest.label.toLowerCase() + ' (' + s.strongest.val + ' ' + s.strongest.unit + ').');
+    return parts.join(' ');
+  }
+
+  renderVals(){
+    const P=this.PROPS, reqs=this.state.reqs, sortBy=this.state.sortBy, sel=this.state.selected;
+    const onA=this.state.direction==='A';
+
+    const activeReqs = reqs.map(r=>{
+      const m=P[r.key];
+      return {
+        id:r.id, label:m.label, unit:m.unit, min:m.min, max:m.max, step:m.step,
+        value:r.value, valueText:this.fmt(r.value,m.decimals), opLabel:r.op==='gte'?'≥':'≤',
+        onToggleOp:()=>this.toggleOp(r.id),
+        onValue:(e)=>this.setReqValue(r.id, e.target.value),
+        onStepUp:()=>this.stepReq(r.id,1), onStepDown:()=>this.stepReq(r.id,-1),
+        onRemove:()=>this.removeReq(r.id),
+        priorityOptions:['must','high','med','low'].map(k=>{
+          const active=r.priority===k;
+          return { label:this.PRIO_LABEL[k], onClick:()=>this.setPriority(r.id,k),
+            bg: active?this.BRAND:'#fff', fg: active?'#fff':'oklch(0.5 0.01 255)',
+            borderColor: active?this.BRAND:'oklch(0.88 0.006 250)' };
+        }),
+      };
+    });
+
+    const scored = this.MATERIALS.map(mat=>{
+      let wsum=0, fsum=0, hardFail=false, failLabels=[], cells=[], bars=[], passCount=0, strongest=null, strongMargin=-1;
+      reqs.forEach(r=>{
+        const m=P[r.key], val=mat.props[r.key], w=this.PRIO_W[r.priority];
+        let fit;
+        if(r.op==='gte') fit = val>=r.value ? 1 : (r.value>0 ? this.clamp(val/r.value,0,1) : 1);
+        else fit = val<=r.value ? 1 : (val>0 ? this.clamp(r.value/val,0,1) : 1);
+        const pass = fit>=0.999;
+        if(pass) passCount++;
+        if(!pass && r.priority==='must'){ hardFail=true; failLabels.push(m.label); }
+        wsum+=w; fsum+=w*fit;
+        const margin = r.op==='gte' ? (val-r.value)/(m.max||1) : (r.value-val)/(m.max||1);
+        if(pass && margin>strongMargin){ strongMargin=margin; strongest={label:m.label, val:this.fmt(val,m.decimals), unit:m.unit}; }
+        const color = pass?this.GREEN : (fit>=0.85?this.AMBER:this.RED);
+        cells.push({ text:this.fmt(val,m.decimals), color });
+        bars.push({ label:m.label, unit:m.unit, valText:this.fmt(val,m.decimals), opLabel:r.op==='gte'?'≥':'≤', reqText:this.fmt(r.value,m.decimals),
+          pct:this.clamp(val/m.max*100,1,100), markPct:this.clamp(r.value/m.max*100,0,100), color });
+      });
+      const score = wsum ? Math.round(100*fsum/wsum) : 0;
+      return { mat, score, hardFail, failLabels, cells, bars, passCount, total:reqs.length, strongest };
+    });
+
+    let list=[...scored];
+    if(sortBy==='score') list.sort((a,b)=> (a.hardFail-b.hardFail) || (b.score-a.score));
+    else list.sort((a,b)=> b.mat.props[sortBy]-a.mat.props[sortBy]);
+
+    const rows = list.map((s,i)=>{
+      const sc=this.scoreColors(s.score, s.hardFail);
+      const isSel=sel.includes(s.mat.id);
+      const [chipBg,chipFg]=this.catColors(s.mat.category);
+      return {
+        id:s.mat.id, name:s.mat.name, category:s.mat.category, chipBg, chipFg,
+        score:s.score, scoreText:String(s.score), scoreColor:sc.fg, scoreBg:sc.bg, ringDeg:s.score*3.6,
+        hardFail:s.hardFail, flagText:s.failLabels.join(', '),
+        passText:s.passCount+'/'+s.total, cells:s.cells, bars:s.bars,
+        reason:this.reason(s), reasonColor: s.hardFail?'oklch(0.5 0.06 25)':'oklch(0.45 0.01 255)',
+        rankText:String(i+1),
+        cardBorder: isSel?this.BRAND:'oklch(0.9 0.006 250)',
+        selected:isSel, onToggle:()=>this.toggleSelect(s.mat.id),
+        selectLabel: isSel?'✓ Geselecteerd':'Vergelijk',
+        btnBg: isSel?this.BRAND:'#fff', btnFg: isSel?'#fff':'oklch(0.5 0.01 255)', btnBorder: isSel?this.BRAND:'oklch(0.88 0.006 250)',
+        checkMark: isSel?'✓':'', checkBg: isSel?this.BRAND:'#fff', checkBorder: isSel?this.BRAND:'oklch(0.82 0.006 250)',
+        rowBg: isSel?'oklch(0.975 0.012 245)':'#fff',
+      };
+    });
+
+    const columns = activeReqs.map(r=>({ label:r.label, unit:r.unit, onSort:()=>this.setSort(this.reqKeyOf(r.id)),
+      caret: sortBy===this.reqKeyOf(r.id)?'↓':'', headColor: sortBy===this.reqKeyOf(r.id)?this.BRAND:'oklch(0.45 0.01 255)' }));
+
+    const selMats = sel.map(id=>scored.find(s=>s.mat.id===id)).filter(Boolean);
+    const compareCols = selMats.map(s=>({ name:s.mat.name, onRemove:()=>this.toggleSelect(s.mat.id) }));
+    const compareRows = Object.keys(P).map(key=>{
+      const m=P[key], vals=selMats.map(s=>s.mat.props[key]);
+      const best = m.dir==='higher'?Math.max(...vals):Math.min(...vals);
+      return { label:m.label, unit:m.unit, cells:selMats.map(s=>{ const v=s.mat.props[key]; const isBest=v===best&&selMats.length>1;
+        return { text:this.fmt(v,m.decimals), color:isBest?this.GREEN:'oklch(0.3 0.01 255)', weight:isBest?'600':'400' }; }) };
+    });
+
+    const usedKeys=reqs.map(r=>r.key);
+    const unusedProps=Object.keys(P).filter(k=>!usedKeys.includes(k)).map(k=>({key:k, label:P[k].label}));
+
+    return {
+      dirA:onA, dirB:!onA,
+      goA:()=>this.setState({direction:'A'}), goB:()=>this.setState({direction:'B'}),
+      aBg:onA?this.BRAND:'transparent', aFg:onA?'#fff':'oklch(0.45 0.02 255)',
+      bBg:!onA?this.BRAND:'transparent', bFg:!onA?'#fff':'oklch(0.45 0.02 255)',
+      query:this.state.query, onQuery:(e)=>this.setState({query:e.target.value}),
+      onQueryKey:(e)=>{ if(e.key==='Enter') this.parseQuery(); },
+      onParse:()=>this.parseQuery(),
+      examples:[
+        { label:'“Lichte beugel, 300 °C, redelijk sterk”', onClick:()=>this.applyExample('light') },
+        { label:'“Goedkoop, corrosievast voor buiten”', onClick:()=>this.applyExample('cheap') },
+        { label:'“Stijf & hittebestendig”', onClick:()=>this.applyExample('stiff') },
+      ],
+      activeReqs, reqCount:reqs.length,
+      rows, columns, resultCount:rows.length,
+      onSortScore:()=>this.setSort('score'), scoreCaret: sortBy==='score'?'↓':'',
+      unusedProps, addValue:'', onAddProp:(e)=>{ if(e.target.value) this.addReq(e.target.value); },
+      hasCompare:selMats.length>0, compareCols, compareRows, compareCount:selMats.length,
+      onClearCompare:()=>this.setState({selected:[]}),
+      showReason:this.props.showAiReason ?? true,
+    };
+  }
+
+  reqKeyOf(id){ const r=this.state.reqs.find(x=>x.id===id); return r?r.key:''; }
+}
+</script>
+</body>
+</html>
